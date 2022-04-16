@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "901605889360",
+    "firebase_url": "https://smartjacket-6c368-default-rtdb.firebaseio.com",
+    "project_id": "smartjacket-6c368",
+    "storage_bucket": "smartjacket-6c368.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901605889360:android:37672160246574b00ec855",
+        "android_client_info": {
+          "package_name": "com.nixbees.location"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901605889360-n1rcc1dehbnss1tsvoogdgq0o6qtttff.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAss0uzJWQXKysM1ccmCT3txUgu_QVhvR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901605889360-n1rcc1dehbnss1tsvoogdgq0o6qtttff.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:901605889360:android:1b93936cceaa18c70ec855",
+        "android_client_info": {
+          "package_name": "com.nixbees.my_loc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "901605889360-n1rcc1dehbnss1tsvoogdgq0o6qtttff.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAss0uzJWQXKysM1ccmCT3txUgu_QVhvR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "901605889360-n1rcc1dehbnss1tsvoogdgq0o6qtttff.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
