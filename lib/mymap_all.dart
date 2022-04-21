@@ -66,37 +66,51 @@ class _MyMapAllState extends State<MyMapAll> {
                   child: CircularProgressIndicator(),
                 );
               }
+
+              List<dynamic> datas = [];
+              snapshot.data!.docs.forEach((element) {
+                final mapData = element.data() as Map;
+                if (mapData.containsKey('latitude') &&
+                    mapData.containsKey('longitude')) {
+                  datas.add(element);
+                }
+              });
               return GoogleMap(
                 mapType: MapType.normal,
                 markers: {
-                  ...snapshot.data!.docs.map(
-                    (e) => Marker(
-                      position: LatLng(
-                        e['latitude'],
-                        e['longitude'],
-                      ),
-                      markerId: const MarkerId('id'),
-                      icon: BitmapDescriptor.defaultMarkerWithHue(
-                        widget.userId == e['id']
-                            ? BitmapDescriptor.hueGreen
-                            : (e['mode'] == 0
-                                ? BitmapDescriptor.hueCyan
-                                : BitmapDescriptor.hueRed),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectedUser = e;
-                        });
-                      },
-                    ),
+                  ...datas.map(
+                    (e) {
+                      final data = e.data() as Map;
+                      return Marker(
+                        position: LatLng(
+                          data['latitude'],
+                          data['longitude'],
+                        ),
+                        markerId: const MarkerId('id'),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                          widget.userId == data['id']
+                              ? BitmapDescriptor.hueGreen
+                              : (data['mode'] == 0
+                                  ? BitmapDescriptor.hueCyan
+                                  : BitmapDescriptor.hueRed),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            selectedUser = e;
+                          });
+                        },
+                      );
+                    },
                   ),
                 },
                 initialCameraPosition: CameraPosition(
                     target: LatLng(
-                      snapshot.data!.docs.singleWhere(
-                          (element) => element.id == widget.userId)['latitude'],
-                      snapshot.data!.docs.singleWhere((element) =>
-                          element.id == widget.userId)['longitude'],
+                      (datas
+                          .singleWhere((element) => element.id == widget.userId)
+                          .data() as Map)['latitude'],
+                      (datas
+                          .singleWhere((element) => element.id == widget.userId)
+                          .data() as Map)['longitude'],
                     ),
                     zoom: 14.47),
                 onMapCreated: (GoogleMapController controller) async {

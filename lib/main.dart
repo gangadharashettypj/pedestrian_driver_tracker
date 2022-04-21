@@ -143,8 +143,8 @@ class _MyAppState extends State<MyApp> {
                           .set({
                         'name': nameController.text,
                         'id': deviceId,
-                        'latitude': '',
-                        'longitude': '',
+                        'latitude': 0.0,
+                        'longitude': 0.0,
                       }, SetOptions(merge: true));
                     },
                     child: const Text('SAVE'),
