@@ -3,9 +3,14 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:location/location.dart' as loc;
+import 'package:location1/auth/auth_utils.dart';
+import 'package:location1/login/login.dart';
 import 'package:location1/mymap.dart';
 import 'package:location1/mymap_all.dart';
+import 'package:location1/routes.dart';
+import 'package:location1/splash_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 
@@ -15,7 +20,9 @@ int mode = 0;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  GetIt.I.registerLazySingleton<AuthUtils>(() => AuthUtils());
   await Firebase.initializeApp();
+  await _requestPermission();
   deviceId = await PlatformDeviceId.getDeviceId ?? '';
   final data = await FirebaseFirestore.instance
       .collection('location')
@@ -32,14 +39,23 @@ void main() async {
     'name': userName,
     'mode': mode,
   }, SetOptions(merge: true));
+
   runApp(
     MaterialApp(
-      home: MyApp(),
+      initialRoute: AppRoutes.splash,
+      routes: {
+        AppRoutes.login: (_) => const LoginScreen(),
+        AppRoutes.home: (_) => MyApp(),
+        AppRoutes.splash: (_) => const SplashScreen(),
+      },
+      debugShowCheckedModeBanner: false,
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -52,12 +68,18 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _requestPermission();
+
     location.changeSettings(
       accuracy: loc.LocationAccuracy.high,
       interval: 2000,
     );
     location.enableBackgroundMode(enable: true);
+  }
+
+  @override
+  void dispose() {
+    _stopListening();
+    super.dispose();
   }
 
   @override
@@ -78,9 +100,11 @@ class _MyAppState extends State<MyApp> {
                   value: map,
                   activeColor: Colors.red,
                   onChanged: (val) {
-                    setState(() {
-                      map = val;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        map = val;
+                      });
+                    }
                   },
                 ),
                 const Text('MAP'),
@@ -164,13 +188,15 @@ class _MyAppState extends State<MyApp> {
 
             TextButton(
               onPressed: () {
-                setState(() {
-                  if (_locationSubscription == null) {
-                    _listenLocation();
-                  } else {
-                    _stopListening();
-                  }
-                });
+                if (mounted) {
+                  setState(() {
+                    if (_locationSubscription == null) {
+                      _listenLocation();
+                    } else {
+                      _stopListening();
+                    }
+                  });
+                }
               },
               child: Text(
                 _locationSubscription == null
@@ -297,8 +323,12 @@ class _MyAppState extends State<MyApp> {
     _locationSubscription = location.onLocationChanged.handleError((onError) {
       print(onError);
       _locationSubscription?.cancel();
-      setState(() {
-        _locationSubscription = null;
+      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+        if (mounted) {
+          setState(() {
+            _locationSubscription = null;
+          });
+        }
       });
     }).listen((loc.LocationData currentlocation) async {
       if (deviceId.isEmpty) return;
@@ -314,19 +344,23 @@ class _MyAppState extends State<MyApp> {
 
   _stopListening() {
     _locationSubscription?.cancel();
-    setState(() {
-      _locationSubscription = null;
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      if (mounted) {
+        setState(() {
+          _locationSubscription = null;
+        });
+      }
     });
   }
+}
 
-  _requestPermission() async {
-    var status = await Permission.location.request();
-    if (status.isGranted) {
-      print('done');
-    } else if (status.isDenied) {
-      _requestPermission();
-    } else if (status.isPermanentlyDenied) {
-      openAppSettings();
-    }
+Future<void> _requestPermission() async {
+  var status = await Permission.location.request();
+  if (status.isGranted) {
+    print('done');
+  } else if (status.isDenied) {
+    _requestPermission();
+  } else if (status.isPermanentlyDenied) {
+    openAppSettings();
   }
 }

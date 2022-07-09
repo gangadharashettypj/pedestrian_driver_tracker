@@ -68,6 +68,7 @@ class _MyMapAllState extends State<MyMapAll> {
               }
 
               List<dynamic> datas = [];
+
               snapshot.data!.docs.forEach((element) {
                 final mapData = element.data() as Map;
                 if (mapData.containsKey('latitude') &&
@@ -95,27 +96,38 @@ class _MyMapAllState extends State<MyMapAll> {
                                   : BitmapDescriptor.hueRed),
                         ),
                         onTap: () {
-                          setState(() {
-                            selectedUser = e;
-                          });
+                          if (mounted)
+                            setState(() {
+                              selectedUser = e;
+                            });
                         },
                       );
                     },
                   ),
                 },
                 initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      (datas
-                          .singleWhere((element) => element.id == widget.userId)
-                          .data() as Map)['latitude'],
-                      (datas
-                          .singleWhere((element) => element.id == widget.userId)
-                          .data() as Map)['longitude'],
-                    ),
+                    target: (datas
+                            .where((element) => element.id == widget.userId)
+                            .isNotEmpty)
+                        ? LatLng(
+                            (datas
+                                .singleWhere(
+                                    (element) => element.id == widget.userId)
+                                .data() as Map)['latitude'],
+                            (datas
+                                .singleWhere(
+                                    (element) => element.id == widget.userId)
+                                .data() as Map)['longitude'],
+                          )
+                        : const LatLng(13.321546, 77.099664),
                     zoom: 14.47),
                 onMapCreated: (GoogleMapController controller) async {
-                  setState(() {
-                    _controller = controller;
+                  WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+                    if (mounted) {
+                      setState(() {
+                        _controller = controller;
+                      });
+                    }
                   });
                 },
               );

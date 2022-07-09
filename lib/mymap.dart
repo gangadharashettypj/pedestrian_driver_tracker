@@ -15,19 +15,26 @@ class _MyMapState extends State<MyMap> {
   final loc.Location location = loc.Location();
   late GoogleMapController _controller;
   bool _added = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: StreamBuilder(
       stream: FirebaseFirestore.instance.collection('location').snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (_added) {
-          mymap(snapshot);
-        }
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(),
           );
+        }
+        if (_added) {
+          mymap(snapshot);
         }
         return GoogleMap(
           mapType: MapType.normal,
@@ -56,9 +63,14 @@ class _MyMapState extends State<MyMap> {
               ),
               zoom: 14.47),
           onMapCreated: (GoogleMapController controller) async {
-            setState(() {
-              _controller = controller;
-              _added = true;
+            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+              if (mounted) {
+                setState(() {
+                  _controller.dispose();
+                  _controller = controller;
+                  _added = true;
+                });
+              }
             });
           },
         );
