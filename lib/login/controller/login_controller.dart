@@ -23,8 +23,8 @@ class LoginController extends GetxController {
   TabController? tabController;
   final _authUtils = GetIt.I<AuthUtils>();
 
-  var email = 'gs@gmail.com'.obs;
-  var password = '12121212'.obs;
+  var email = ''.obs;
+  var password = ''.obs;
   var nestCode = '121212'.obs;
   var pageIndex = 0.obs;
 

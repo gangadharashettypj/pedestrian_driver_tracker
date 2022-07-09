@@ -215,23 +215,23 @@ class _LoginScreenState extends State<LoginScreen>
                 initialValue: controller.password.value,
                 validator: pwdValidator,
               ),
-              TextFieldWidget(
-                hintText: 'Nest Code',
-                suffixIcon: Icons.security,
-                onChanged: (val) {
-                  controller.nestCode.value = val;
-                },
-                initialValue: controller.nestCode.value,
-                maxLength: 6,
-                textInputType: TextInputType.number,
-                validator: (String? value) {
-                  if (value!.isEmpty || value.length < 6) {
-                    return 'Please enter 6 digit nest code.';
-                  } else {
-                    return null;
-                  }
-                },
-              ),
+              // TextFieldWidget(
+              //   hintText: 'Nest Code',
+              //   suffixIcon: Icons.security,
+              //   onChanged: (val) {
+              //     controller.nestCode.value = val;
+              //   },
+              //   initialValue: controller.nestCode.value,
+              //   maxLength: 6,
+              //   textInputType: TextInputType.number,
+              //   validator: (String? value) {
+              //     if (value!.isEmpty || value.length < 6) {
+              //       return 'Please enter 6 digit nest code.';
+              //     } else {
+              //       return null;
+              //     }
+              //   },
+              // ),
               CustomSizedBox.h12,
               Container(
                 margin: const EdgeInsets.only(bottom: 8),
