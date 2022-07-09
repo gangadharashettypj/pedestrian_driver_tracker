@@ -47,6 +47,8 @@ dependencies:
   cached_network_image:
   flutter_svg:
   provider:
+  geolocator:
+  awesome_notifications:
 
 
 dev_dependencies:

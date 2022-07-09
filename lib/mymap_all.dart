@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as loc;
+import 'package:location1/main.dart';
 
 class MyMapAll extends StatefulWidget {
   final String userId;
@@ -76,60 +77,84 @@ class _MyMapAllState extends State<MyMapAll> {
                   datas.add(element);
                 }
               });
-              return GoogleMap(
-                mapType: MapType.normal,
-                markers: {
-                  ...datas.map(
-                    (e) {
-                      final data = e.data() as Map;
-                      return Marker(
-                        position: LatLng(
-                          data['latitude'],
-                          data['longitude'],
+              int usersCount = getAlert(snapshot.data!.docs);
+              return Column(
+                children: [
+                  Container(
+                    child: Center(
+                      child: Text(
+                        getMessage(usersCount),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                         ),
-                        markerId: const MarkerId('id'),
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          widget.userId == data['id']
-                              ? BitmapDescriptor.hueGreen
-                              : (data['mode'] == 0
-                                  ? BitmapDescriptor.hueCyan
-                                  : BitmapDescriptor.hueRed),
-                        ),
-                        onTap: () {
-                          if (mounted)
-                            setState(() {
-                              selectedUser = e;
-                            });
-                        },
-                      );
-                    },
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(8),
+                    color: getColor(usersCount),
+                    width: double.infinity,
                   ),
-                },
-                initialCameraPosition: CameraPosition(
-                    target: (datas
-                            .where((element) => element.id == widget.userId)
-                            .isNotEmpty)
-                        ? LatLng(
-                            (datas
-                                .singleWhere(
-                                    (element) => element.id == widget.userId)
-                                .data() as Map)['latitude'],
-                            (datas
-                                .singleWhere(
-                                    (element) => element.id == widget.userId)
-                                .data() as Map)['longitude'],
-                          )
-                        : const LatLng(13.321546, 77.099664),
-                    zoom: 14.47),
-                onMapCreated: (GoogleMapController controller) async {
-                  WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-                    if (mounted) {
-                      setState(() {
-                        _controller = controller;
-                      });
-                    }
-                  });
-                },
+                  Expanded(
+                    child: GoogleMap(
+                      mapType: MapType.normal,
+                      markers: {
+                        ...datas.map(
+                          (e) {
+                            final data = e.data() as Map;
+                            return Marker(
+                              position: LatLng(
+                                data['latitude'],
+                                data['longitude'],
+                              ),
+                              markerId: const MarkerId('id'),
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                widget.userId == data['id']
+                                    ? BitmapDescriptor.hueGreen
+                                    : (data['mode'] == 0
+                                        ? BitmapDescriptor.hueCyan
+                                        : BitmapDescriptor.hueRed),
+                              ),
+                              onTap: () {
+                                if (mounted)
+                                  setState(() {
+                                    selectedUser = e;
+                                  });
+                              },
+                            );
+                          },
+                        ),
+                      },
+                      initialCameraPosition: CameraPosition(
+                          target: (datas
+                                  .where(
+                                      (element) => element.id == widget.userId)
+                                  .isNotEmpty)
+                              ? LatLng(
+                                  (datas
+                                      .singleWhere((element) =>
+                                          element.id == widget.userId)
+                                      .data() as Map)['latitude'],
+                                  (datas
+                                      .singleWhere((element) =>
+                                          element.id == widget.userId)
+                                      .data() as Map)['longitude'],
+                                )
+                              : const LatLng(13.321546, 77.099664),
+                          zoom: 14.47),
+                      onMapCreated: (GoogleMapController controller) async {
+                        WidgetsBinding.instance
+                            ?.addPostFrameCallback((timeStamp) {
+                          if (mounted) {
+                            setState(() {
+                              _controller = controller;
+                            });
+                          }
+                        });
+                      },
+                    ),
+                  ),
+                ],
               );
             },
           ),
