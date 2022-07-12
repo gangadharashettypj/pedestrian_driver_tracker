@@ -198,6 +198,21 @@ class _LoginScreenState extends State<LoginScreen>
               buildTabs(),
               CustomSizedBox.h24,
               TextFieldWidget(
+                hintText: 'Username',
+                suffixIcon: Icons.mail_outline_rounded,
+                onChanged: (val) {
+                  controller.userName.value = val;
+                },
+                initialValue: controller.userName.value,
+                textInputType: TextInputType.number,
+                validator: (val) {
+                  if (val?.isEmpty == true || val == null) {
+                    return 'Please enter a valid name';
+                  }
+                  return null;
+                },
+              ),
+              TextFieldWidget(
                 hintText: 'Email',
                 suffixIcon: Icons.mail_outline_rounded,
                 onChanged: (val) {
@@ -215,23 +230,16 @@ class _LoginScreenState extends State<LoginScreen>
                 initialValue: controller.password.value,
                 validator: pwdValidator,
               ),
-              // TextFieldWidget(
-              //   hintText: 'Nest Code',
-              //   suffixIcon: Icons.security,
-              //   onChanged: (val) {
-              //     controller.nestCode.value = val;
-              //   },
-              //   initialValue: controller.nestCode.value,
-              //   maxLength: 6,
-              //   textInputType: TextInputType.number,
-              //   validator: (String? value) {
-              //     if (value!.isEmpty || value.length < 6) {
-              //       return 'Please enter 6 digit nest code.';
-              //     } else {
-              //       return null;
-              //     }
-              //   },
-              // ),
+              TextFieldWidget(
+                hintText: 'Emergency Email ID',
+                suffixIcon: Icons.mail_outline_rounded,
+                onChanged: (val) {
+                  controller.emergencyEmail.value = val;
+                },
+                initialValue: controller.emergencyEmail.value,
+                textInputType: TextInputType.number,
+                validator: emailValidator,
+              ),
               CustomSizedBox.h12,
               Container(
                 margin: const EdgeInsets.only(bottom: 8),
@@ -258,40 +266,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget buildScreen() {
-    // return RotatedBox(
-    //   quarterTurns: 1,
-    //   child: Column(
-    //     crossAxisAlignment: CrossAxisAlignment.stretch,
-    //     children: [
-    //       CustomSizedBox.h30,
-    //       Center(
-    //         child: AnimatedTextKit(
-    //           animatedTexts: [
-    //             TyperAnimatedText(
-    //               'WWW.NIXBEES.COM',
-    //               textStyle: const TextStyle(
-    //                 fontSize: 30,
-    //                 color: MyColors.black,
-    //                 fontWeight: FontWeight.bold,
-    //                 decoration: TextDecoration.underline,
-    //               ),
-    //               speed: Duration(
-    //                 seconds: 'WWW.NIXBEES.COM'.toString().length ~/ 13,
-    //               ),
-    //             ),
-    //           ],
-    //           totalRepeatCount: 1,
-    //           displayFullTextOnTap: true,
-    //         ),
-    //       ),
-    //       Expanded(
-    //         child: Lottie.network(
-    //           'https://assets4.lottiefiles.com/packages/lf20_i22x4uu7.json',
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
     return TabBarView(
       controller: controller.getTabController(this),
       children: [

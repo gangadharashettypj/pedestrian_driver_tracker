@@ -8,11 +8,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
 import 'package:location/location.dart' as loc;
 import 'package:location1/auth/auth_utils.dart';
+import 'package:location1/images.dart';
 import 'package:location1/login/login.dart';
 import 'package:location1/mymap.dart';
 import 'package:location1/mymap_all.dart';
+import 'package:location1/profile.dart';
 import 'package:location1/routes.dart';
+import 'package:location1/sized_box.dart';
 import 'package:location1/splash_screen.dart';
+import 'package:location1/widgets/image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 
@@ -74,8 +78,9 @@ void main() async {
       initialRoute: AppRoutes.splash,
       routes: {
         AppRoutes.login: (_) => const LoginScreen(),
-        AppRoutes.home: (_) => MyApp(),
+        AppRoutes.home: (_) => const MyApp(),
         AppRoutes.splash: (_) => const SplashScreen(),
+        AppRoutes.profile: (_) => const ProfileScreen(),
       },
       debugShowCheckedModeBanner: false,
     ),
@@ -118,8 +123,23 @@ class _MyAppState extends State<MyApp> {
       initialIndex: mode,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'LOCATION TRACKER',
+          title: Row(
+            children: [
+              InkWell(
+                radius: 100,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.profile);
+                },
+                child: ImageWidget(
+                  imageLocation: MyImages.profile,
+                  height: 26,
+                ),
+              ),
+              CustomSizedBox.w12,
+              const Text(
+                'TRACKER',
+              ),
+            ],
           ),
           actions: [
             Row(

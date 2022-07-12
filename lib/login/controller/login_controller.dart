@@ -25,7 +25,8 @@ class LoginController extends GetxController {
 
   var email = ''.obs;
   var password = ''.obs;
-  var nestCode = '121212'.obs;
+  var emergencyEmail = ''.obs;
+  var userName = ''.obs;
   var pageIndex = 0.obs;
 
   TabController getTabController(dynamic vsy) {
@@ -62,8 +63,10 @@ class LoginController extends GetxController {
       password: password.value,
     )
         .then((currentUser) async {
-      final name = FirebaseAuth.instance.currentUser!.email!.split('@').first;
-      await FirebaseAuth.instance.currentUser!.updateProfile(displayName: name);
+      await FirebaseAuth.instance.currentUser!.updateProfile(
+        displayName: userName.value,
+        photoURL: emergencyEmail.value,
+      );
 
       toast('User registered successfully');
 
