@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -18,7 +19,7 @@ import 'package:location1/sized_box.dart';
 import 'package:location1/splash_screen.dart';
 import 'package:location1/widgets/image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:platform_device_id/platform_device_id.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 String deviceId = '';
 String userName = '';
@@ -55,23 +56,6 @@ void main() async {
     // This is very important to not harm the user experience
     await AwesomeNotifications().requestPermissionToSendNotifications();
   }
-
-  deviceId = await PlatformDeviceId.getDeviceId ?? '';
-  final data = await FirebaseFirestore.instance
-      .collection('location')
-      .doc(deviceId)
-      .get();
-  try {
-    mode = data.data()?['mode'] ?? 0;
-    userName = data.data()?['name'] ?? 'GUEST';
-  } catch (e) {
-    print(e);
-  }
-  FirebaseFirestore.instance.collection('location').doc(deviceId).set({
-    'id': deviceId,
-    'name': userName,
-    'mode': mode,
-  }, SetOptions(merge: true));
 
   runApp(
     MaterialApp(
@@ -185,78 +169,53 @@ class _MyAppState extends State<MyApp> {
             const SizedBox(
               height: 20,
             ),
-            Text(
-              'ID: $deviceId',
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        hintText: 'Name',
-                      ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    if (mounted) {
+                      setState(() {
+                        if (_locationSubscription == null) {
+                          _listenLocation();
+                        } else {
+                          _stopListening();
+                        }
+                      });
+                    }
+                  },
+                  child: Text(
+                    _locationSubscription == null
+                        ? 'ENABLE  LOCATION'
+                        : 'DISABLE  LOCATION',
+                    style: TextStyle(
+                      color: _locationSubscription == null
+                          ? Colors.green
+                          : Colors.red,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-                  TextButton(
-                    onPressed: () async {
-                      if (deviceId.isEmpty) return;
-                      await FirebaseFirestore.instance
-                          .collection('location')
-                          .doc(deviceId)
-                          .set({
-                        'name': nameController.text,
-                        'id': deviceId,
-                        'latitude': 0.0,
-                        'longitude': 0.0,
-                      }, SetOptions(merge: true));
-                    },
-                    child: const Text('SAVE'),
-                  ),
-                ],
-              ),
-            ),
-            // TextButton(
-            //   onPressed: () {
-            //     _getLocation();
-            //   },
-            //   child: const Text('add my location'),
-            // ),
-            const SizedBox(
-              height: 16,
-            ),
-
-            TextButton(
-              onPressed: () {
-                if (mounted) {
-                  setState(() {
-                    if (_locationSubscription == null) {
-                      _listenLocation();
-                    } else {
-                      _stopListening();
-                    }
-                  });
-                }
-              },
-              child: Text(
-                _locationSubscription == null
-                    ? 'ENABLE  LOCATION'
-                    : 'DISABLE  LOCATION',
-                style: TextStyle(
-                  color:
-                      _locationSubscription == null ? Colors.green : Colors.red,
-                  fontWeight: FontWeight.w900,
                 ),
-              ),
+                TextButton(
+                  onPressed: () async {
+                    final uri =
+                        'mailto:${FirebaseAuth.instance.currentUser?.photoURL ?? "emergency@gmail.com"}?subject=Emergency Alert&body=Hello sir,\nThere is some emregency for ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'}. Please check with them once.\n\nThank You';
+                    print(await canLaunchUrl(Uri.parse(uri)));
+                    if (await canLaunchUrl(Uri.parse(uri))) {
+                      await launchUrl(Uri.parse(uri));
+                    } else {
+                      throw 'Could not launch $uri';
+                    }
+                  },
+                  child: const Text(
+                    'Send Emergency Mail',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
             ),
             // TextButton(
             //   onPressed: () {
