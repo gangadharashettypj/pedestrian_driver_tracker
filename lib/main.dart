@@ -83,6 +83,7 @@ class _MyAppState extends State<MyApp> {
   final nameController = TextEditingController(text: userName);
   StreamSubscription<loc.LocationData>? _locationSubscription;
   bool map = true;
+
   @override
   void initState() {
     super.initState();
@@ -198,8 +199,15 @@ class _MyAppState extends State<MyApp> {
                 ),
                 TextButton(
                   onPressed: () async {
+                    final loc.LocationData _locationResult =
+                        await location.getLocation();
+                    print('>>>>>>>>>>>');
+                    print(_locationResult.latitude);
+                    print(_locationResult.longitude);
+                    print(
+                        'https://maps.google.com?q=${_locationResult.latitude},${_locationResult.longitude}');
                     final uri =
-                        'mailto:${FirebaseAuth.instance.currentUser?.photoURL ?? "emergency@gmail.com"}?subject=Emergency Alert&body=Hello sir,\nThere is some emregency for ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'}. Please check with them once.\n\nThank You';
+                        'mailto:${FirebaseAuth.instance.currentUser?.photoURL ?? "emergency@gmail.com"}?cc=roadsafety71@gmail.com&subject=Emergency Alert&body=Hello sir,\nThere is some emregency for ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'}.\nLocation: ${Uri.encodeComponent('https://maps.google.com?q=${_locationResult.latitude?.toStringAsFixed(6) ?? ''},${_locationResult.longitude?.toStringAsFixed(6) ?? ''}')}\nPlease check with them once.\n\nThank You';
                     print(await canLaunchUrl(Uri.parse(uri)));
                     if (await canLaunchUrl(Uri.parse(uri))) {
                       await launchUrl(Uri.parse(uri));
