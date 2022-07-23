@@ -19,6 +19,7 @@ import 'package:location1/sized_box.dart';
 import 'package:location1/splash_screen.dart';
 import 'package:location1/widgets/image_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 String deviceId = '';
@@ -56,6 +57,7 @@ void main() async {
     // This is very important to not harm the user experience
     await AwesomeNotifications().requestPermissionToSendNotifications();
   }
+  deviceId = await PlatformDeviceId.getDeviceId ?? '';
 
   runApp(
     MaterialApp(
@@ -400,7 +402,7 @@ String getMessage(int count) {
   if (count > 2) {
     str = 'RISK LEVEL:  HIGH';
   }
-  if (count > 1) {
+  else if (count > 1) {
     str = 'RISK LEVEL:  MEDIUM';
   }
   AwesomeNotifications().createNotification(
