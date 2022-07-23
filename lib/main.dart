@@ -4,6 +4,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_it/get_it.dart';
@@ -95,6 +96,52 @@ class _MyAppState extends State<MyApp> {
       interval: 2000,
     );
     location.enableBackgroundMode(enable: true);
+
+    FirebaseDatabase.instance
+        .ref()
+        .child('ped')
+        .child('accident')
+        .onValue
+        .listen((event) async {
+      if (event.snapshot.exists && event.snapshot.value == true) {
+        await FirebaseDatabase.instance
+            .ref()
+            .child('ped')
+            .child('accident')
+            .set(false);
+        final loc.LocationData _locationResult = await location.getLocation();
+        final uri =
+            'mailto:${FirebaseAuth.instance.currentUser?.photoURL ?? "emergency@gmail.com"}?cc=roadsafety71@gmail.com&subject=Emergency Alert&body=Hello sir,\nThere is an accident detected for user ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'}.\nLocation: ${Uri.encodeComponent('https://maps.google.com?q=${_locationResult.latitude?.toStringAsFixed(6) ?? ''},${_locationResult.longitude?.toStringAsFixed(6) ?? ''}')}\nPlease check with them once.\n\nThank You';
+        if (await canLaunchUrl(Uri.parse(uri))) {
+          await launchUrl(Uri.parse(uri));
+        } else {
+          throw 'Could not launch $uri';
+        }
+      }
+    });
+
+    FirebaseDatabase.instance
+        .ref()
+        .child('ped')
+        .child('alcohol')
+        .onValue
+        .listen((event) async {
+      if (event.snapshot.exists && event.snapshot.value == true) {
+        await FirebaseDatabase.instance
+            .ref()
+            .child('ped')
+            .child('alcohol')
+            .set(false);
+        final loc.LocationData _locationResult = await location.getLocation();
+        final uri =
+            'mailto:${FirebaseAuth.instance.currentUser?.photoURL ?? "emergency@gmail.com"}?cc=roadsafety71@gmail.com&subject=Emergency Alert&body=Hello sir,\n User ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'} is driving by drinking alcohol.\nLocation: ${Uri.encodeComponent('https://maps.google.com?q=${_locationResult.latitude?.toStringAsFixed(6) ?? ''},${_locationResult.longitude?.toStringAsFixed(6) ?? ''}')}\nPlease check with them once.\n\nThank You';
+        if (await canLaunchUrl(Uri.parse(uri))) {
+          await launchUrl(Uri.parse(uri));
+        } else {
+          throw 'Could not launch $uri';
+        }
+      }
+    });
   }
 
   @override
@@ -203,14 +250,8 @@ class _MyAppState extends State<MyApp> {
                   onPressed: () async {
                     final loc.LocationData _locationResult =
                         await location.getLocation();
-                    print('>>>>>>>>>>>');
-                    print(_locationResult.latitude);
-                    print(_locationResult.longitude);
-                    print(
-                        'https://maps.google.com?q=${_locationResult.latitude},${_locationResult.longitude}');
                     final uri =
                         'mailto:${FirebaseAuth.instance.currentUser?.photoURL ?? "emergency@gmail.com"}?cc=roadsafety71@gmail.com&subject=Emergency Alert&body=Hello sir,\nThere is some emregency for ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'}.\nLocation: ${Uri.encodeComponent('https://maps.google.com?q=${_locationResult.latitude?.toStringAsFixed(6) ?? ''},${_locationResult.longitude?.toStringAsFixed(6) ?? ''}')}\nPlease check with them once.\n\nThank You';
-                    print(await canLaunchUrl(Uri.parse(uri)));
                     if (await canLaunchUrl(Uri.parse(uri))) {
                       await launchUrl(Uri.parse(uri));
                     } else {
@@ -401,8 +442,7 @@ String getMessage(int count) {
 
   if (count > 2) {
     str = 'RISK LEVEL:  HIGH';
-  }
-  else if (count > 1) {
+  } else if (count > 1) {
     str = 'RISK LEVEL:  MEDIUM';
   }
   AwesomeNotifications().createNotification(

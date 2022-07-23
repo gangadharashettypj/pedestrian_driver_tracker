@@ -19,14 +19,14 @@ float distanceInch;
 #include <addons/RTDBHelper.h>
 
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID "DreamTech"
-#define WIFI_PASSWORD ""
+#define WIFI_SSID "Nixbees11"
+#define WIFI_PASSWORD "Praveen*2019"
 
 /* 2. Define the API Key */
-#define API_KEY "AIzaSyCSqQIQVyKkpRGt5zzPFRJNkaUq8VvFX_E"
+#define API_KEY "AIzaSyAss0uzJWQXKysM1ccmCT3txUgu_QVhvR0"
 
 /* 3. Define the RTDB URL */
-#define DATABASE_URL "student-projects-8a312-default-rtdb.firebaseio.com" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
+#define DATABASE_URL "smartjacket-6c368-default-rtdb.firebaseio.com" //<databaseName>.firebaseio.com or <databaseName>.<region>.firebasedatabase.app
 
 /* 4. Define the user Email and password that alreadey registerd or added in your project */
 #define USER_EMAIL "test@gmail.com"
@@ -90,7 +90,6 @@ void setup(void) {
 
 void loop(void) {
   // Clears the trigPin
-  Firebase.RTDB.
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   // Sets the trigPin on HIGH state for 10 micro seconds
@@ -110,8 +109,8 @@ void loop(void) {
   // Prints the distance on the Serial Monitor
   //  Serial.print("Distance (cm): ");
   //  Serial.println(distanceCm);
-  Serial.print(digitalRead(D3));
-  if (!digitalRead(D4)) {
+//  Serial.print(digitalRead(D3));
+  if (distanceCm < 50) {
 
     digitalWrite(D8, HIGH);
   }
